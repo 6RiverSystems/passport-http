@@ -451,5 +451,41 @@ vows
         },
       },
     },
+    "strategy handling a request, multiple colons": {
+      topic: function () {
+        var strategy = new BasicStrategy(function (userid, password, done) {
+          done(null, { username: userid, password: password });
+        });
+        return strategy;
+      },
+
+      "after augmenting with actions": {
+        topic: function (strategy) {
+          var self = this;
+          var req = {};
+          strategy.success = function (user) {
+            self.callback(null, user);
+          };
+          strategy.fail = function () {
+            self.callback(new Error("should not be called"));
+          };
+
+          req.headers = {};
+          req.headers.authorization = "Basic dXNlcjpwYTpzczp3bzpyZAo=";
+          process.nextTick(function () {
+            strategy.authenticate(req);
+          });
+        },
+
+        "should not generate an error": function (err, user) {
+          assert.isNull(err);
+        },
+
+        "should authenticate": function (err, user) {
+          assert.equal(user.username, "user");
+          assert.equal(user.password, "pa:ss:wo:rd");
+        },
+      },
+    },
   })
   .export(module);
