@@ -471,7 +471,7 @@ vows
           };
 
           req.headers = {};
-          req.headers.authorization = "Basic dXNlcjpwYTpzczp3bzpyZAo=";
+          req.headers.authorization = "Basic dXNlcjpwYTpzczp3bzpyZA==";
           process.nextTick(function () {
             strategy.authenticate(req);
           });
